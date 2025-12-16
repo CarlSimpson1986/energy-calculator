@@ -3,20 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <title>Personal Energy & Macro Blueprint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; }
-    .container { max-width: 600px; margin: 40px auto; background:#fff; padding:20px; border-radius:8px; }
-    label { display:block; margin-top:15px; }
-    input, select, button { width:100%; padding:8px; margin-top:5px; }
-    button { margin-top:20px; background:#000; color:#fff; border:none; cursor:pointer; }
-    #results { margin-top:30px; display:none; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 26px;
+    }
+
+    p {
+      color: #444;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      font-size: 18px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .error {
+      color: #b00020;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    #results {
+      display: none;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid #eee;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+
+    pre {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    .tagline {
+      font-style: italic;
+      color: #666;
+      margin-top: -10px;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Your Personal Energy & Macro Blueprint</h2>
-  <p>Answer a few questions to generate your personalised plan.</p>
+
+  <h1>Your Personal Energy & Macro Blueprint</h1>
+  <p class="tagline">Your energy is your ultimate KPI.</p>
+
+  <p>
+    This isn’t a generic calorie calculator.  
+    It gives you a clear daily energy target and macro breakdown based on your goal and how you prefer to eat.
+  </p>
+
+  <!-- INPUTS -->
 
   <label>Sex</label>
   <select id="sex">
@@ -25,33 +115,41 @@
     <option value="female">Female</option>
   </select>
 
-  <label>Age</label>
-  <input type="number" id="age">
+  <label>Age (years)</label>
+  <input type="number" id="age" min="16" max="80">
 
   <label>Height (cm)</label>
-  <input type="number" id="height">
+  <input type="number" id="height" min="140" max="220">
 
   <label>Weight (kg)</label>
-  <input type="number" id="weight">
+  <input type="number" id="weight" min="40" max="200">
 
   <label>Activity level</label>
   <select id="activity_level">
     <option value="">Select</option>
-    <option value="sedentary">Mostly sedentary</option>
-    <option value="light">Lightly active</option>
-    <option value="moderate">Moderately active</option>
-    <option value="very_active">Very active</option>
+    <option value="sedentary">
+      Mostly sedentary (desk job, &lt;5k steps, little exercise)
+    </option>
+    <option value="light">
+      Lightly active (1–3 sessions/week, 6–8k steps)
+    </option>
+    <option value="moderate">
+      Moderately active (3–5 sessions/week, 8–12k steps)
+    </option>
+    <option value="very_active">
+      Very active (6+ sessions/week, physical job, 12k+ steps)
+    </option>
   </select>
 
-  <label>Goal</label>
+  <label>Main goal</label>
   <select id="goal">
     <option value="">Select</option>
     <option value="fat_loss">Lose body fat</option>
-    <option value="maintain">Maintain</option>
+    <option value="maintain">Maintain current weight</option>
     <option value="muscle_gain">Build muscle</option>
   </select>
 
-  <label>Eating style</label>
+  <label>Eating preference</label>
   <select id="nutrition_style">
     <option value="">Select</option>
     <option value="high_carb">Higher-carb</option>
@@ -67,19 +165,68 @@
     <option value="5">5</option>
   </select>
 
-  <button id="generate">Generate My Plan</button>
+  <button id="generateBtn">Generate My Plan</button>
+
+  <div id="error" class="error"></div>
+
+  <!-- RESULTS PLACEHOLDER -->
 
   <div id="results">
-    <h3>Your Results</h3>
+    <h2>Your Results</h2>
+
     <p><strong>Target Daily Energy:</strong> <span id="calories"></span> kcal</p>
+
     <ul>
       <li>Protein: <span id="protein"></span> g</li>
-      <li>Carbs: <span id="carbs"></span> g</li>
+      <li>Carbohydrates: <span id="carbs"></span> g</li>
       <li>Fats: <span id="fats"></span> g</li>
     </ul>
-    <pre id="meal_plan"></pre>
+
+    <h3>Example Day of Eating</h3>
+    <pre id="meal_plan">Meal plan will appear here.</pre>
   </div>
+
 </div>
+
+<script>
+  document.getElementById("generateBtn").addEventListener("click", function () {
+    const fields = [
+      "sex","age","height","weight",
+      "activity_level","goal","nutrition_style","meals_per_day"
+    ];
+
+    let payload = {};
+    let error = "";
+
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value) {
+        error = "Please complete all fields before continuing.";
+      } else {
+        payload[id] = el.value;
+      }
+    });
+
+    if (error) {
+      document.getElementById("error").innerText = error;
+      return;
+    }
+
+    document.getElementById("error").innerText = "";
+
+    // TEMP OUTPUT (until Azure is connected)
+    document.getElementById("results").style.display = "block";
+    document.getElementById("calories").innerText = "—";
+    document.getElementById("protein").innerText = "—";
+    document.getElementById("carbs").innerText = "—";
+    document.getElementById("fats").innerText = "—";
+    document.getElementById("meal_plan").innerText =
+      "Your personalised plan will be generated here once the calculation engine is connected.";
+
+    // This payload is EXACTLY what we’ll send to Azure next
+    console.log("Prepared payload:", payload);
+  });
+</script>
 
 </body>
 </html>
