@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Your Personalised Calorie Targets</title>
+  <title>Your Personalised Calorie Target</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -91,56 +91,51 @@
 
   <div class="container">
 
-    <h1>Your daily calorie targets</h1>
-    <p>Based on the information you entered, these are your personal targets.</p>
+    <h1>Your daily calorie target</h1>
+    <p>Based on the goal you selected, this is the number you should be aiming for.</p>
 
     <div class="results-box">
-      <div class="result-row">
-        <span class="label">Maintenance calories</span>
-        <span class="value" id="maintenance">—</span>
+
+      <div class="result-row" id="row-fatloss">
+        <span class="label">Daily calorie target</span>
+        <span class="value" id="fatloss">—</span>
       </div>
 
-      <div class="result-row">
-        <span class="label">Fat loss calories</span>
-        <span class="value" id="fatloss">—</span>
+      <div class="result-row" id="row-muscle">
+        <span class="label">Daily calorie target</span>
+        <span class="value" id="muscle">—</span>
+      </div>
+
+      <div class="result-row" id="row-maintenance">
+        <span class="label">Daily calorie target</span>
+        <span class="value" id="maintenance">—</span>
       </div>
 
       <div class="result-row">
         <span class="label">Protein target</span>
         <span class="value" id="protein">—</span>
       </div>
+
     </div>
 
     <div class="explain">
-      <h2>Turn these numbers into something you can actually follow</h2>
+      <h2>Turn this into something you can actually follow</h2>
 
       <p>
-        Numbers alone don’t get results.  
-        Implementation does.
+        Knowing your numbers is only useful if you know how to apply them
+        without over-complicating things or falling off after a week.
       </p>
 
       <p>
-        Enter your email below and I’ll send you my
-        <strong>Anti-BS Diet Protocol</strong> — the exact framework I use to
-        help people apply targets like these without obsessing or burning out.
+        Drop your email below and I’ll send you my
+        <strong>Anti-BS Diet Protocol</strong> — the exact framework I use
+        to help people apply targets like these in real life.
       </p>
 
-      <!-- ========================= -->
-      <!-- KARTRA FORM EMBED SECTION -->
-      <!-- ========================= -->
       <div class="kartra-wrapper">
 
-        <!-- PASTE YOUR FULL KARTRA EMBED CODE BELOW -->
+        <!-- 🔴 PASTE YOUR FULL KARTRA INLINE EMBED CODE BELOW 🔴 -->
         <!-- DO NOT EDIT THEIR SCRIPT OR FORM TAGS -->
-
-        <!-- EXAMPLE STRUCTURE (REPLACE WITH YOUR REAL CODE) -->
-        <!--
-        <script src="https://app.kartra.com/resources/js/kartra-embed.js"></script>
-        <div class="kartra_embed"
-             data-kt-type="optin"
-             data-kt-id="YOUR_FORM_ID">
-        </div>
-        -->
 
       </div>
 
@@ -152,19 +147,32 @@
   </div>
 
   <script>
-    // Read values from URL query string
     const params = new URLSearchParams(window.location.search);
 
+    const goal = params.get("goal");
     const maintenance = params.get("maintenance");
     const fatloss = params.get("fatloss");
+    const muscle = params.get("muscle");
     const protein = params.get("protein");
 
-    if (maintenance) {
-      document.getElementById("maintenance").textContent = maintenance + " kcal";
+    // Hide all calorie rows initially
+    document.getElementById("row-fatloss").style.display = "none";
+    document.getElementById("row-muscle").style.display = "none";
+    document.getElementById("row-maintenance").style.display = "none";
+
+    if (goal === "fatloss" && fatloss) {
+      document.getElementById("row-fatloss").style.display = "flex";
+      document.getElementById("fatloss").textContent = fatloss + " kcal";
     }
 
-    if (fatloss) {
-      document.getElementById("fatloss").textContent = fatloss + " kcal";
+    if (goal === "muscle" && muscle) {
+      document.getElementById("row-muscle").style.display = "flex";
+      document.getElementById("muscle").textContent = muscle + " kcal";
+    }
+
+    if (goal === "maintenance" && maintenance) {
+      document.getElementById("row-maintenance").style.display = "flex";
+      document.getElementById("maintenance").textContent = maintenance + " kcal";
     }
 
     if (protein) {
@@ -174,3 +182,4 @@
 
 </body>
 </html>
+
